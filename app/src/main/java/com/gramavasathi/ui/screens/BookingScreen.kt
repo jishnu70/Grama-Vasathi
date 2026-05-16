@@ -1,12 +1,14 @@
 package com.gramavasathi.ui.screens
 
 import android.app.DatePickerDialog
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -57,8 +59,9 @@ fun BookingScreen(
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { },
-            title = { Text("Booking Request Sent! 🌿", style = MaterialTheme.typography.headlineMedium, fontSize = 20.sp) },
-            text = { Text("Host will call you within 24 hours to confirm.") },
+            icon = { Icon(Icons.Default.CheckCircle, contentDescription = null, tint = LeafGreen, modifier = Modifier.size(48.dp)) },
+            title = { Text("Booking Confirmed! 🌿", style = Typography.displayLarge, fontSize = 22.sp) },
+            text = { Text("Your rural escape is waiting. The host will contact you shortly to finalize the details.") },
             confirmButton = {
                 Button(
                     onClick = {
@@ -68,156 +71,188 @@ fun BookingScreen(
                             popUpTo(Screen.Home.route) { inclusive = true }
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Terracotta)
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = EarthBrown),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Back to Home")
+                    Text("Explore More")
                 }
-            }
+            },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = Color.White
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(CreamWhite)
-            .padding(20.dp)
-    ) {
-        Text(text = "Book Your Stay", style = MaterialTheme.typography.displayLarge, fontSize = 24.sp)
-        Text(text = homestayName, color = MutedBrown, modifier = Modifier.padding(top = 4.dp))
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Your Name") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        OutlinedTextField(
-            value = phone,
-            onValueChange = { if (it.length <= 10) phone = it },
-            label = { Text("Phone Number") },
-            prefix = { Text("+91 ") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        OutlinedTextField(
-            value = guests,
-            onValueChange = { guests = it },
-            label = { Text("Number of Guests") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Row(modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                value = checkIn,
-                onValueChange = { },
-                label = { Text("Check-in") },
-                modifier = Modifier.weight(1f).clickable {
-                    val datePicker = DatePickerDialog(context, { _, y, m, d ->
-                        val cal = Calendar.getInstance().apply { set(y, m, d) }
-                        checkIn = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time)
-                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-                    datePicker.show()
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Confirm Booking", style = Typography.titleLarge) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = EarthBrown)
+                    }
                 },
-                enabled = false,
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = EarthBrown,
-                    disabledBorderColor = DividerWarm,
-                    disabledLabelColor = MutedBrown
-                )
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            OutlinedTextField(
-                value = checkOut,
-                onValueChange = { },
-                label = { Text("Check-out") },
-                modifier = Modifier.weight(1f).clickable {
-                    val datePicker = DatePickerDialog(context, { _, y, m, d ->
-                        val cal = Calendar.getInstance().apply { set(y, m, d) }
-                        checkOut = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time)
-                    }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-                    datePicker.show()
-                },
-                enabled = false,
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = EarthBrown,
-                    disabledBorderColor = DividerWarm,
-                    disabledLabelColor = MutedBrown
-                )
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = CreamWhite)
             )
         }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        OutlinedTextField(
-            value = requests,
-            onValueChange = { requests = it },
-            label = { Text("Special Requests (Optional)") },
-            modifier = Modifier.fillMaxWidth().height(120.dp),
-            shape = RoundedCornerShape(12.dp)
-        )
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        // Price Summary
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = WarmBeige),
-            shape = RoundedCornerShape(16.dp)
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .background(CreamWhite)
+                .padding(padding)
+                .padding(20.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                val nights = calculateNights(checkIn, checkOut)
-                val total = nights * pricePerNight
-                Text(text = "$nights nights × ₹$pricePerNight = ₹$total", color = MutedBrown)
-                Text(text = "Grama-Vasathi Service Fee: ₹0", color = LeafGreen, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
-                Text(text = "Total: ₹$total", style = MaterialTheme.typography.displayLarge, fontSize = 20.sp, modifier = Modifier.padding(top = 12.dp))
+            // Summary Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = WarmBeige),
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box(modifier = Modifier.size(48.dp).background(EarthBrown, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.Home, contentDescription = null, tint = Color.White)
+                    }
+                    Column(modifier = Modifier.padding(start = 16.dp)) {
+                        Text(text = homestayName, style = Typography.titleLarge, fontSize = 16.sp)
+                        Text(text = "Reserved at ₹$pricePerNight / night", style = Typography.bodyMedium)
+                    }
+                }
             }
-        }
-        
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        Button(
-            onClick = {
-                val booking = Booking(
-                    homestay_id = homestayId,
-                    homestay_name = homestayName,
-                    guest_name = name,
-                    guest_phone = phone,
-                    check_in = checkIn,
-                    check_out = checkOut,
-                    guests_count = guests.toIntOrNull() ?: 1,
-                    total_price = calculateTotal(checkIn, checkOut, pricePerNight)
+
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(text = "Traveler Details", style = Typography.titleLarge)
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            PremiumTextField(value = name, onValueChange = { name = it }, label = "Full Name", icon = Icons.Default.Person)
+            Spacer(modifier = Modifier.height(16.dp))
+            PremiumTextField(value = phone, onValueChange = { if (it.length <= 10) phone = it }, label = "Phone Number", icon = Icons.Default.Phone, prefix = "+91 ")
+            Spacer(modifier = Modifier.height(16.dp))
+            PremiumTextField(value = guests, onValueChange = { guests = it }, label = "Number of Guests", icon = Icons.Default.Groups)
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(text = "Stay Dates", style = Typography.titleLarge)
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Box(modifier = Modifier.weight(1f)) {
+                    PremiumDateField(value = checkIn, label = "Check-in") {
+                        val dp = DatePickerDialog(context, { _, y, m, d ->
+                            val c = Calendar.getInstance().apply { set(y, m, d) }
+                            checkIn = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(c.time)
+                        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+                        dp.show()
+                    }
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Box(modifier = Modifier.weight(1f)) {
+                    PremiumDateField(value = checkOut, label = "Check-out") {
+                        val dp = DatePickerDialog(context, { _, y, m, d ->
+                            val c = Calendar.getInstance().apply { set(y, m, d) }
+                            checkOut = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(c.time)
+                        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+                        dp.show()
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(text = "Additional Info", style = Typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = requests,
+                onValueChange = { requests = it },
+                modifier = Modifier.fillMaxWidth().height(120.dp),
+                placeholder = { Text("Any specific needs or food allergies?") },
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = EarthBrown,
+                    unfocusedBorderColor = DividerWarm,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
                 )
-                viewModel.submitBooking(booking)
-            },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Terracotta),
-            shape = RoundedCornerShape(50.dp)
-        ) {
-            Text("Confirm Booking Request", style = MaterialTheme.typography.headlineMedium, fontSize = 18.sp, color = Color.White)
+            )
+
+            Spacer(modifier = Modifier.height(40.dp))
+            
+            // Total Price Calculation
+            val nights = calculateNights(checkIn, checkOut)
+            val total = nights * pricePerNight
+            
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = WarmBeige,
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(text = "Booking Summary", style = Typography.labelMedium, color = MutedBrown)
+                        Text(text = "$nights Nights", style = Typography.labelMedium, color = EarthBrown)
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(text = "Total Amount", style = Typography.titleLarge, fontSize = 20.sp)
+                        Text(text = "₹$total", style = Typography.displayLarge, fontSize = 24.sp, color = Terracotta)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Button(
+                onClick = {
+                    val booking = Booking(
+                        homestay_id = homestayId,
+                        homestay_name = homestayName,
+                        guest_name = name,
+                        guest_phone = phone,
+                        check_in = checkIn,
+                        check_out = checkOut,
+                        guests_count = guests.toIntOrNull() ?: 1,
+                        total_price = total
+                    )
+                    viewModel.submitBooking(booking)
+                },
+                modifier = Modifier.fillMaxWidth().height(64.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = EarthBrown),
+                shape = RoundedCornerShape(16.dp),
+                elevation = ButtonDefaults.buttonElevation(8.dp)
+            ) {
+                Text("Confirm Booking", style = Typography.titleLarge, color = Color.White)
+            }
+            
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
 
-fun calculateNights(checkIn: String, checkOut: String): Int {
-    if (checkIn.isBlank() || checkOut.isBlank()) return 1
-    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+@Composable
+fun PremiumTextField(value: String, onValueChange: (String) -> Unit, label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, prefix: String = "") {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(label) },
+        leadingIcon = { Icon(icon, contentDescription = null, tint = MutedBrown) },
+        prefix = if (prefix.isNotEmpty()) { { Text(prefix) } } else null,
+        shape = RoundedCornerShape(16.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = EarthBrown,
+            unfocusedBorderColor = DividerWarm,
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White
+        )
+    )
+}
+
+private fun calculateNights(checkIn: String, checkOut: String): Int {
+    if (checkIn.isEmpty() || checkOut.isEmpty()) return 1
     return try {
-        val d1 = sdf.parse(checkIn)
-        val d2 = sdf.parse(checkOut)
-        val diff = d2.time - d1.time
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date1 = sdf.parse(checkIn)
+        val date2 = sdf.parse(checkOut)
+        val diff = date2!!.time - date1!!.time
         val nights = (diff / (1000 * 60 * 60 * 24)).toInt()
         if (nights < 1) 1 else nights
     } catch (e: Exception) {
@@ -225,6 +260,21 @@ fun calculateNights(checkIn: String, checkOut: String): Int {
     }
 }
 
-fun calculateTotal(checkIn: String, checkOut: String, price: Int): Int {
-    return calculateNights(checkIn, checkOut) * price
+@Composable
+fun PremiumDateField(value: String, label: String, onClick: () -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { },
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        label = { Text(label) },
+        leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = null, tint = MutedBrown) },
+        enabled = false,
+        shape = RoundedCornerShape(16.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            disabledTextColor = EarthBrown,
+            disabledBorderColor = DividerWarm,
+            disabledLabelColor = MutedBrown,
+            disabledContainerColor = Color.White
+        )
+    )
 }

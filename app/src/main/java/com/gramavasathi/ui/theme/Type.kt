@@ -15,43 +15,66 @@ val provider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs
 )
 
+val LoraFont = GoogleFont("Lora")
+val NunitoFont = GoogleFont("Nunito")
+
 val Lora = FontFamily(
-    Font(googleFont = GoogleFont("Lora"), fontProvider = provider)
+    Font(googleFont = LoraFont, fontProvider = provider, weight = FontWeight.Normal),
+    Font(googleFont = LoraFont, fontProvider = provider, weight = FontWeight.Bold)
 )
 
 val Nunito = FontFamily(
-    Font(googleFont = GoogleFont("Nunito"), fontProvider = provider)
+    Font(googleFont = NunitoFont, fontProvider = provider, weight = FontWeight.Normal),
+    Font(googleFont = NunitoFont, fontProvider = provider, weight = FontWeight.Bold),
+    Font(googleFont = NunitoFont, fontProvider = provider, weight = FontWeight.ExtraBold)
 )
 
 val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = Lora,
         fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
+        fontSize = 34.sp,
+        lineHeight = 40.sp,
+        letterSpacing = (-0.5).sp,
         color = EarthBrown
     ),
     headlineMedium = TextStyle(
         fontFamily = Lora,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
+        lineHeight = 32.sp,
+        color = EarthBrown
+    ),
+    titleLarge = TextStyle(
+        fontFamily = Nunito,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 20.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp,
         color = EarthBrown
     ),
     bodyLarge = TextStyle(
         fontFamily = Nunito,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp,
         color = EarthBrown
     ),
     bodyMedium = TextStyle(
         fontFamily = Nunito,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp,
         color = MutedBrown
     ),
-    labelSmall = TextStyle(
+    labelMedium = TextStyle(
         fontFamily = Nunito,
         fontWeight = FontWeight.Bold,
-        fontSize = 11.sp,
-        color = MutedBrown
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp,
+        color = EarthBrown
     )
 )

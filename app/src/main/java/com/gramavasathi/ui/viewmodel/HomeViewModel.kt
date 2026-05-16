@@ -1,50 +1,64 @@
 package com.gramavasathi.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gramavasathi.data.model.Homestay
 import com.gramavasathi.data.repository.HomestayRepository
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+
+data class HomeState(
+    val homestays: List<Homestay> = emptyList(),
+    val featured: List<Homestay> = emptyList(),
+    val selectedActivities: Set<String> = emptySet(),
+    val isLoading: Boolean = false,
+    val wishlist: Set<String> = emptySet()
+)
 
 class HomeViewModel : ViewModel() {
     private val repository = HomestayRepository()
     
-    private val _homestays = MutableLiveData<List<Homestay>>()
-    val homestays: LiveData<List<Homestay>> = _homestays
-    
-    private val _featuredHomestays = MutableLiveData<List<Homestay>>()
-    val featuredHomestays: LiveData<List<Homestay>> = _featuredHomestays
-    
-    private val _selectedActivities = MutableLiveData<Set<String>>(emptySet())
-    val selectedActivities: LiveData<Set<String>> = _selectedActivities
+    private val _state = MutableStateFlow(HomeState())
+    val state: StateFlow<HomeState> = _state.asStateFlow()
 
     init {
-        loadHomestays()
+        loadData()
     }
 
-    private fun loadHomestays() {
+    private fun loadData() {
         viewModelScope.launch {
-            val list = repository.getAllHomestays()
-            _homestays.value = list
-            _featuredHomestays.value = list.filter { it.rating >= 4.8 }.take(3)
+            _state.update { it.copy(isLoading = true) }
+            val all = repository.getAllHomestays()
+            _state.update { 
+                it.copy(
+                    homestays = all,
+                    featured = all.filter { h -> h.rating >= 4.8 }.take(5),
+                    isLoading = false
+                )
+            }
         }
     }
 
     fun toggleActivity(activity: String) {
-        val current = _selectedActivities.value ?: emptySet()
-        val newSet = if (current.contains(activity)) current - activity else current + activity
-        _selectedActivities.value = newSet
-        applyFilters(newSet)
+        val current = _state.value.selectedActivities
+        val next = if (current.contains(activity)) current - activity else current + activity
+        _state.update { it.copy(selectedActivities = next) }
+        filterHomestays(next)
     }
 
-    private fun applyFilters(activities: Set<String>) {
+    private fun filterHomestays(activities: Set<String>) {
         viewModelScope.launch {
             val all = repository.getAllHomestays()
-            _homestays.value = if (activities.isEmpty()) all else {
+            val filtered = if (activities.isEmpty()) all else {
                 all.filter { it.activities.containsAll(activities) }
             }
+            _state.update { it.copy(homestays = filtered) }
         }
+    }
+
+    fun toggleWishlist(id: String) {
+        val current = _state.value.wishlist
+        val next = if (current.contains(id)) current - id else current + id
+        _state.update { it.copy(wishlist = next) }
     }
 }

@@ -1,5 +1,6 @@
 package com.gramavasathi.ui.screens
 
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -7,23 +8,28 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.gramavasathi.R
-import com.gramavasathi.ui.viewmodel.HostViewModel
 import com.gramavasathi.ui.theme.*
+import com.gramavasathi.ui.viewmodel.HostViewModel
+import com.gramavasathi.utils.*
 
 @Composable
 fun HostTrainingScreen(navController: NavController, viewModel: HostViewModel = viewModel()) {
@@ -36,18 +42,35 @@ fun HostTrainingScreen(navController: NavController, viewModel: HostViewModel = 
     Box(modifier = Modifier.fillMaxSize().background(CreamWhite)) {
         if (!showFinalScore) {
             Column(modifier = Modifier.fillMaxSize()) {
-                // Step Indicator
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                // Premium Progress Header
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color.White,
+                    shadowElevation = 4.dp
                 ) {
-                    repeat(viewModel.categories.size) { index ->
-                        val color = if (index <= currentStep) GoldenWheat else DividerWarm
-                        val size = if (index == currentStep) 14.dp else 10.dp
-                        Box(modifier = Modifier.size(size).clip(CircleShape).background(color))
-                        if (index < viewModel.categories.size - 1) {
-                            Box(modifier = Modifier.width(20.dp).height(1.dp).background(DividerWarm))
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text(text = "Host Certification", style = Typography.labelMedium, color = MutedBrown)
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            repeat(viewModel.categories.size) { index ->
+                                val isActive = index == currentStep
+                                val isDone = index < currentStep
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(6.dp)
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(
+                                            when {
+                                                isDone -> LeafGreen
+                                                isActive -> EarthBrown
+                                                else -> DividerWarm
+                                            }
+                                        )
+                                )
+                            }
                         }
                     }
                 }
@@ -57,192 +80,233 @@ fun HostTrainingScreen(navController: NavController, viewModel: HostViewModel = 
 
                 LazyColumn(
                     modifier = Modifier.weight(1f).padding(horizontal = 20.dp),
+                    contentPadding = PaddingValues(top = 24.dp, bottom = 120.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_host),
-                                contentDescription = null,
-                                tint = EarthBrown,
-                                modifier = Modifier.size(64.dp)
+                        Column {
+                            Text(
+                                text = "Step ${currentStep + 1}: $category",
+                                style = Typography.displayLarge,
+                                fontSize = 24.sp
                             )
                             Text(
-                                text = category,
-                                style = MaterialTheme.typography.displayLarge,
-                                fontSize = 22.sp,
-                                modifier = Modifier.padding(start = 16.dp)
+                                text = "Ensure your home meets these standards for city guests.",
+                                style = Typography.bodyMedium,
+                                modifier = Modifier.padding(top = 4.dp)
                             )
                         }
                     }
 
                     items(items) { item ->
-                        ChecklistItemView(
+                        PremiumChecklistItem(
                             item = item,
                             isChecked = checkedItems.contains(item.id),
                             onToggle = { viewModel.toggleItem(item.id) }
                         )
                     }
                 }
+            }
 
-                // Sticky Score Bar
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = Color.White,
-                    shadowElevation = 16.dp
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+            // Floating Score Card
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(20.dp)
+                    .fillMaxWidth(),
+                color = Color.White,
+                shape = RoundedCornerShape(24.dp),
+                shadowElevation = 12.dp
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = "Readiness Score", style = Typography.labelMedium, color = MutedBrown)
+                            Text(text = "$score / 100", style = Typography.titleLarge, color = EarthBrown)
+                        }
+                        Surface(
+                            color = getScoreColor(score).copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp)
                         ) {
-                            Column {
-                                Text(text = "Your Score So Far:", color = MutedBrown, fontSize = 12.sp)
-                                Text(text = "$score / 100", style = MaterialTheme.typography.headlineMedium, fontSize = 18.sp)
-                            }
-                            Surface(color = getScoreColor(score), shape = RoundedCornerShape(50.dp)) {
-                                Text(
-                                    text = getScoreTier(score),
-                                    color = EarthBrown,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                                    fontWeight = FontWeight.Bold
-                                )
+                            Text(
+                                text = getScoreTier(score).split(" ").last(), // Icon only or short text
+                                color = getScoreColor(score),
+                                style = Typography.labelMedium,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        if (currentStep > 0) {
+                            OutlinedButton(
+                                onClick = { viewModel.prevStep() },
+                                modifier = Modifier.weight(0.4f).height(48.dp),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text("Previous", style = Typography.labelMedium)
                             }
                         }
-                        
-                        LinearProgressIndicator(
-                            progress = score / 100f,
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp).height(8.dp).clip(RoundedCornerShape(4.dp)),
-                            color = getScoreColor(score),
-                            trackColor = DividerWarm
-                        )
-                        
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            if (currentStep > 0) {
-                                TextButton(
-                                    onClick = { viewModel.prevStep() },
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text("← Back", color = MutedBrown)
-                                }
-                            } else {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
-                            Button(
-                                onClick = { viewModel.nextStep() },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = EarthBrown),
-                                shape = RoundedCornerShape(50.dp)
-                            ) {
-                                Text(if (currentStep == viewModel.categories.size - 1) "See Final Score →" else "Next Step →")
-                            }
+                        Button(
+                            onClick = { viewModel.nextStep() },
+                            modifier = Modifier.weight(0.6f).height(48.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = EarthBrown),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = if (currentStep == viewModel.categories.size - 1) "Finish Check →" else "Next Step →",
+                                style = Typography.labelMedium,
+                                color = Color.White
+                            )
                         }
                     }
                 }
             }
         } else {
-            FinalScoreOverlay(score, viewModel) {
-                // navController.navigateUp()
+            HostCertificationView(score, viewModel) {
+                navController.navigateUp()
             }
         }
     }
 }
 
 @Composable
-fun ChecklistItemView(item: com.gramavasathi.data.model.ChecklistItem, isChecked: Boolean, onToggle: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth().clickable { onToggle() }.padding(vertical = 4.dp),
-        verticalAlignment = Alignment.Top
+fun PremiumChecklistItem(item: com.gramavasathi.data.model.ChecklistItem, isChecked: Boolean, onToggle: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onToggle() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isChecked) Color.White else Color.White.copy(alpha = 0.6f)
+        ),
+        border = BorderStroke(1.dp, if (isChecked) EarthBrown else DividerWarm)
     ) {
-        Checkbox(
-            checked = isChecked,
-            onCheckedChange = { onToggle() },
-            colors = CheckboxDefaults.colors(checkedColor = GoldenWheat)
-        )
-        Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
-            Text(text = item.title, fontWeight = FontWeight.Bold, color = EarthBrown)
-            Text(text = item.description, color = MutedBrown, fontSize = 13.sp)
-        }
-        Surface(color = WarmBeige, shape = RoundedCornerShape(50.dp)) {
-            Text(
-                text = "+${item.points} pts",
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold
-            )
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(if (isChecked) LeafGreen else DividerWarm),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isChecked) Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+            }
+            
+            Column(modifier = Modifier.weight(1f).padding(start = 16.dp)) {
+                Text(
+                    text = item.title,
+                    style = Typography.titleLarge,
+                    fontSize = 16.sp,
+                    color = if (isChecked) EarthBrown else MutedBrown
+                )
+                Text(
+                    text = item.description,
+                    style = Typography.bodyMedium,
+                    fontSize = 13.sp
+                )
+            }
+            
+            Surface(
+                color = WarmBeige,
+                shape = RoundedCornerShape(50.dp)
+            ) {
+                Text(
+                    text = "+${item.points}",
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                    style = Typography.labelMedium,
+                    fontSize = 10.sp,
+                    color = EarthBrown
+                )
+            }
         }
     }
 }
 
 @Composable
-fun FinalScoreOverlay(score: Int, viewModel: HostViewModel, onBack: () -> Unit) {
+fun HostCertificationView(score: Int, viewModel: HostViewModel, onDismiss: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(
-                progress = score / 100f,
-                modifier = Modifier.size(200.dp),
-                color = getScoreColor(score),
-                strokeWidth = 12.dp,
-                trackColor = DividerWarm
-            )
-            Text(text = score.toString(), style = MaterialTheme.typography.displayLarge, fontSize = 48.sp)
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = getScoreTier(score), style = MaterialTheme.typography.displayLarge, fontSize = 24.sp)
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = WarmBeige),
-            shape = RoundedCornerShape(16.dp)
+        // Certificate Style Box
+        Surface(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+            color = WarmBeige,
+            shape = RoundedCornerShape(24.dp),
+            border = BorderStroke(2.dp, GoldenWheat)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                viewModel.categories.forEach { category ->
-                    val (earned, max) = viewModel.getCategoryScore(category)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = category, fontWeight = FontWeight.Bold)
-                        Text(text = "$earned/$max ${if (earned == max) "✓" else ""}")
+            Column(
+                modifier = Modifier.padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_host),
+                    contentDescription = null,
+                    tint = EarthBrown,
+                    modifier = Modifier.size(80.dp)
+                )
+                Text(
+                    text = "CERTIFICATE OF READINESS",
+                    style = Typography.labelMedium,
+                    color = MutedBrown,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+                Text(
+                    text = getScoreTier(score).uppercase(),
+                    style = Typography.displayLarge,
+                    fontSize = 28.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+                
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 24.dp)) {
+                    CircularProgressIndicator(
+                        progress = score / 100f,
+                        modifier = Modifier.size(140.dp),
+                        color = getScoreColor(score),
+                        strokeWidth = 10.dp,
+                        trackColor = Color.White
+                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = score.toString(), style = Typography.displayLarge, fontSize = 42.sp)
+                        Text(text = "/ 100", style = Typography.labelMedium, color = MutedBrown)
                     }
                 }
+                
+                Text(
+                    text = "Based on our 5-step village standards check, your farm stay is officially recognized as a community partner.",
+                    style = Typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
             }
         }
         
-        Spacer(modifier = Modifier.height(24.dp))
-        OutlinedButton(
+        // Actions
+        Button(
             onClick = { /* Share */ },
-            modifier = Modifier.fillMaxWidth().height(48.dp),
-            shape = RoundedCornerShape(50.dp)
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = EarthBrown),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Text("Share My Score")
+            Icon(Icons.Default.Share, contentDescription = null, tint = Color.White)
+            Text("Share Achievement", modifier = Modifier.padding(start = 12.dp), color = Color.White)
         }
         
-        Spacer(modifier = Modifier.height(12.dp))
-        Button(
-            onClick = { /* List Home-stay toast */ },
-            modifier = Modifier.fillMaxWidth().height(48.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = EarthBrown),
-            shape = RoundedCornerShape(50.dp)
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        OutlinedButton(
+            onClick = onDismiss,
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Text("List My Home-stay")
+            Text("Continue to Platform", color = EarthBrown)
         }
-    }
-}
-
-fun getScoreTier(score: Int): String {
-    return when (score) {
-        in 0..39 -> "🌱 Getting Started"
-        in 40..69 -> "🌿 Almost Ready"
-        in 70..89 -> "🌾 Guest Ready"
-        else -> "⭐ Certified Host"
     }
 }
