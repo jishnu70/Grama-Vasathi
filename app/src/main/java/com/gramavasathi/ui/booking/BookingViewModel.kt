@@ -26,6 +26,7 @@ class BookingViewModel : ViewModel() {
     val checkIn = MutableStateFlow("")
     val checkOut = MutableStateFlow("")
     val requests = MutableStateFlow("")
+    val isSubmitting = MutableStateFlow(false)
 
     fun load(id: String) {
         viewModelScope.launch { _homestay.value = homestayRepo.getHomestayById(id) }
@@ -44,9 +45,22 @@ class BookingViewModel : ViewModel() {
         return hasName && validPhone && hasDates && validStay
     }
 
+    fun validationErrors(): List<String> {
+        val out = mutableListOf<String>()
+        if (guestName.value.isBlank()) out += "Please enter your name."
+        if (!phone.value.matches(Regex("^\\d{10}$"))) out += "Phone number must be exactly 10 digits."
+        if (checkIn.value.isBlank()) out += "Please select a check-in date."
+        if (checkOut.value.isBlank()) out += "Please select a check-out date."
+        if (checkIn.value.isNotBlank() && checkOut.value.isNotBlank() && nightsBetween(checkIn.value, checkOut.value) < 1) {
+            out += "Check-out must be at least one day after check-in."
+        }
+        return out
+    }
+
     fun submit(onResult: (Boolean) -> Unit) {
         val h = _homestay.value ?: return onResult(false)
         viewModelScope.launch {
+            isSubmitting.value = true
             val booking = Booking(
                 id = UUID.randomUUID().toString(),
                 homestay_id = h.id,
@@ -58,7 +72,9 @@ class BookingViewModel : ViewModel() {
                 guests_count = guests.value,
                 total_price = total()
             )
-            onResult(runCatching { bookingRepo.createBooking(booking) }.isSuccess)
+            val ok = runCatching { bookingRepo.createBooking(booking) }.isSuccess
+            isSubmitting.value = false
+            onResult(ok)
         }
     }
 }
