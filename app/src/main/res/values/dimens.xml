@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="card_radius">20dp</dimen>
+    <dimen name="button_radius">50dp</dimen>
+    <dimen name="hero_image_height">200dp</dimen>
+    <dimen name="homestay_card_image_height">160dp</dimen>
+</resources>

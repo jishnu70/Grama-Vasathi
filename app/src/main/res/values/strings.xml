@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Grama-Vasathi</string>
+    <string name="app_name">ಗ್ರಾಮ ವಸತಿ (Grama Vasathi)</string>
+    <string name="title_home">ಮುಖಪುಟ (Home)</string>
+    <string name="title_explore">ಅನ್ವೇಷಿಸಿ (Explore)</string>
+    <string name="title_host">ತರಬೇತಿ (Host Training)</string>
+    <string name="title_guide">ಮಾರ್ಗದರ್ಶಿ (Cultural Guide)</string>
 </resources>
