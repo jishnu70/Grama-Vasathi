@@ -33,8 +33,8 @@ fun ExploreScreen(navController: NavController, viewModel: ExploreViewModel = vi
     var isFiltersExpanded by remember { mutableStateOf(false) }
     
     val activitiesList = listOf(
-        "🐄 Cow Milking", "🌾 Field Plowing", "🍳 Local Cooking", "🐦 Bird Watching",
-        "🌅 Sunrise Trek", "🎣 Fishing", "🌿 Herb Garden", "🏞️ Nature Walk"
+        "🐄 ಹಾಲು ಕರೆಯುವುದು", "🌾 ಹೊಲ ಉಳುವುದು", "🍳 ಅಡುಗೆ ತಯಾರಿ", "🐦 ಪಕ್ಷಿ ವೀಕ್ಷಣೆ",
+        "🌅 ಸೂರ್ಯೋದಯ ಚಾರಣ", "🎣 ಮೀನುಗಾರಿಕೆ", "🌿 ಗಿಡಮೂಲಿಕೆ ತೋಟ", "🏞️ ಪ್ರಕೃತಿ ನಡಿಗೆ"
     )
 
     Box(modifier = Modifier.fillMaxSize().background(CreamWhite)) {
@@ -46,7 +46,7 @@ fun ExploreScreen(navController: NavController, viewModel: ExploreViewModel = vi
                     .background(Color.White)
                     .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
-                Text(text = "Explore", style = Typography.displayLarge, fontSize = 24.sp)
+                Text(text = "ಅನ್ವೇಷಿಸಿ (Explore)", style = Typography.displayLarge, fontSize = 24.sp)
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 // Premium Search Bar
@@ -54,7 +54,7 @@ fun ExploreScreen(navController: NavController, viewModel: ExploreViewModel = vi
                     value = state.query,
                     onValueChange = { viewModel.onQueryChanged(it) },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Search villages or farm activities...", style = Typography.bodyMedium) },
+                    placeholder = { Text("ಹಳ್ಳಿ ಅಥವಾ ಕೃಷಿ ಚಟುವಟಿಕೆಗಳನ್ನು ಹುಡುಕಿ...", style = Typography.bodyMedium) },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MutedBrown) },
                     trailingIcon = {
                         IconButton(onClick = { isFiltersExpanded = !isFiltersExpanded }) {

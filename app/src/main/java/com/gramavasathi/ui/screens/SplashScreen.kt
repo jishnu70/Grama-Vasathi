@@ -78,7 +78,7 @@ fun SplashScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                text = "ग्राम वसति",
+                text = "ಗ್ರಾಮ ವಸತಿ",
                 style = Typography.displayLarge,
                 fontSize = 40.sp,
                 color = EarthBrown

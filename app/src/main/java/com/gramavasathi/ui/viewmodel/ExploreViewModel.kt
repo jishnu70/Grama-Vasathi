@@ -67,7 +67,7 @@ class ExploreViewModel : ViewModel() {
                 val matchesQuery = h.name.contains(query, true) || 
                                  h.village.contains(query, true) || 
                                  h.district.contains(query, true)
-                val matchesActivities = activities.isEmpty() || h.activities.containsAll(activities)
+                val matchesActivities = activities.isEmpty() || h.activities.any { it in activities }
                 val matchesPrice = h.price_per_night >= range.start && h.price_per_night <= range.endInclusive
                 
                 matchesQuery && matchesActivities && matchesPrice

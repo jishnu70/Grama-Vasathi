@@ -43,10 +43,10 @@ class MainActivity : ComponentActivity() {
 }
 
 sealed class Screen(val route: String, val title: String, val icon: Int) {
-    object Home : Screen("home", "Home", R.drawable.ic_home)
-    object Explore : Screen("explore", "Explore", R.drawable.ic_explore)
-    object Host : Screen("host", "Host", R.drawable.ic_host)
-    object Guide : Screen("guide", "Guide", R.drawable.ic_guide)
+    object Home : Screen("home", "ಮುಖಪುಟ", R.drawable.ic_home)
+    object Explore : Screen("explore", "ಅನ್ವೇಷಿಸಿ", R.drawable.ic_explore)
+    object Host : Screen("host", "ತರಬೇತಿ", R.drawable.ic_host)
+    object Guide : Screen("guide", "ಮಾರ್ಗದರ್ಶಿ", R.drawable.ic_guide)
     object Splash : Screen("splash", "Splash", R.drawable.ic_host)
     object Detail : Screen("detail/{homestayId}", "Detail", R.drawable.ic_explore)
     object Booking : Screen("booking/{homestayId}/{name}/{price}", "Booking", R.drawable.ic_explore)
