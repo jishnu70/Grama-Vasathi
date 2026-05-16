@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Grama-Vasathi</string>
+    <string name="app_name_native">ग्राम वसति</string>
+    <string name="tagline">Live the Matti-Vasane — Scent of the Soil</string>
+    <string name="seed_data">Seed Data</string>
 </resources>

@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.GramaVasathi" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/earth_brown</item>
+        <item name="colorSecondary">@color/golden_wheat</item>
+        <item name="colorTertiary">@color/terracotta</item>
+        <item name="colorSurface">@color/cream_white</item>
+        <item name="colorSurfaceVariant">@color/warm_beige</item>
+        <item name="android:colorBackground">@color/cream_white</item>
+        <item name="android:windowBackground">@color/cream_white</item>
+        <item name="android:fontFamily">@font/nunito</item>
+        <item name="fontFamily">@font/nunito</item>
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.Lora.Display</item>
+    </style>
 
-    <style name="Theme.GramaVasathi" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="TextAppearance.Lora.Display" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="android:fontFamily">@font/lora</item>
+        <item name="fontFamily">@font/lora</item>
+        <item name="android:textColor">@color/earth_brown</item>
+    </style>
+
+    <style name="TextAppearance.Lora.Heading" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">@font/lora</item>
+        <item name="fontFamily">@font/lora</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/earth_brown</item>
+    </style>
+
+    <style name="TextAppearance.Nunito.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/nunito</item>
+        <item name="fontFamily">@font/nunito</item>
+        <item name="android:textColor">@color/earth_brown</item>
+    </style>
 </resources>
