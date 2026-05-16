@@ -6,11 +6,22 @@ import androidx.compose.runtime.Composable
 
 private val scheme = lightColorScheme(
     primary = EarthBrown,
+    onPrimary = White,
+    primaryContainer = WarmBeige,
+    onPrimaryContainer = EarthBrown,
     secondary = GoldenWheat,
+    onSecondary = EarthBrown,
+    secondaryContainer = WarmBeige,
     tertiary = Terracotta,
+    onTertiary = White,
     background = CreamWhite,
+    onBackground = EarthBrown,
     surface = CreamWhite,
-    surfaceVariant = WarmBeige
+    onSurface = EarthBrown,
+    surfaceVariant = WarmBeige,
+    onSurfaceVariant = MutedBrown,
+    outline = DividerWarm,
+    outlineVariant = DividerWarm
 )
 
 @Composable
