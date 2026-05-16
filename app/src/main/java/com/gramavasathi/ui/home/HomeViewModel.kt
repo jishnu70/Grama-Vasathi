@@ -44,8 +44,9 @@ class HomeViewModel : ViewModel() {
 
     fun seed(onDone: (Boolean) -> Unit) {
         viewModelScope.launch {
-            onDone(runCatching { seeder.seedAll() }.isSuccess)
-            load()
+            val ok = runCatching { seeder.seedAll() }.isSuccess
+            onDone(ok)
+            if (ok) load()
         }
     }
 }

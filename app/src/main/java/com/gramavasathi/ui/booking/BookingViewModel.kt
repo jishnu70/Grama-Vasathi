@@ -36,7 +36,13 @@ class BookingViewModel : ViewModel() {
         return (nightsBetween(checkIn.value, checkOut.value).coerceAtLeast(1) * h.price_per_night).toInt()
     }
 
-    fun isValid(): Boolean = guestName.value.isNotBlank() && phone.value.length == 10 && checkIn.value.isNotBlank() && checkOut.value.isNotBlank() && nightsBetween(checkIn.value, checkOut.value) >= 1
+    fun isValid(): Boolean {
+        val hasName = guestName.value.isNotBlank()
+        val validPhone = phone.value.matches(Regex("^\\d{10}$"))
+        val hasDates = checkIn.value.isNotBlank() && checkOut.value.isNotBlank()
+        val validStay = nightsBetween(checkIn.value, checkOut.value) >= 1
+        return hasName && validPhone && hasDates && validStay
+    }
 
     fun submit(onResult: (Boolean) -> Unit) {
         val h = _homestay.value ?: return onResult(false)

@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,7 +39,7 @@ import com.gramavasathi.ui.components.HomestayCard
 import com.gramavasathi.ui.theme.CreamWhite
 import com.gramavasathi.ui.theme.EarthBrown
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ExploreScreen(
     onDetails: (String) -> Unit,
@@ -71,13 +73,8 @@ fun ExploreScreen(
                 Text("Filters ${if (expanded) "▲" else "▼"}", modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), color = EarthBrown)
                 if (expanded) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            vm.activityList.chunked(4).first().forEach { a ->
-                                AssistChip(onClick = { vm.toggleActivity(a) }, label = { Text(a) })
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            vm.activityList.chunked(4).getOrNull(1)?.forEach { a ->
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            vm.activityList.forEach { a ->
                                 AssistChip(onClick = { vm.toggleActivity(a) }, label = { Text(a) })
                             }
                         }
@@ -86,7 +83,7 @@ fun ExploreScreen(
                         Text("Min Host Score: ${minScore.toInt()}")
                         Slider(value = minScore, onValueChange = vm::setMinScore, valueRange = 0f..100f)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = {}) { Text("Apply Filters") }
+                            Button(onClick = { expanded = false }) { Text("Apply Filters") }
                             Button(onClick = vm::clearAll) { Text("Clear All") }
                         }
                         Text("Selected: ${selected.joinToString()}")

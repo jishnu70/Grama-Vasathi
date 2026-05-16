@@ -21,6 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDate
@@ -51,7 +53,7 @@ fun BookingScreen(id: String, onDone: () -> Unit, vm: BookingViewModel = viewMod
             Text(h.village)
         }
         item { OutlinedTextField(vm.guestName.collectAsStateWithLifecycle().value, { vm.guestName.value = it }, label = { Text("Your Name") }, modifier = Modifier.fillMaxWidth()) }
-        item { OutlinedTextField(vm.phone.collectAsStateWithLifecycle().value, { vm.phone.value = it.take(10) }, label = { Text("Phone Number") }, modifier = Modifier.fillMaxWidth()) }
+        item { OutlinedTextField(vm.phone.collectAsStateWithLifecycle().value, { vm.phone.value = it.filter { c -> c.isDigit() }.take(10) }, label = { Text("Phone Number") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), modifier = Modifier.fillMaxWidth()) }
         item { OutlinedTextField(vm.guests.collectAsStateWithLifecycle().value.toString(), { vm.guests.value = it.toIntOrNull()?.coerceIn(1, 8) ?: 1 }, label = { Text("Guests (1-8)") }, modifier = Modifier.fillMaxWidth()) }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

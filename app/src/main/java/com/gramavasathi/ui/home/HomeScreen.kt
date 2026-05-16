@@ -1,5 +1,6 @@
 package com.gramavasathi.ui.home
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -55,6 +56,7 @@ fun HomeScreen(
     val homestays by vm.all.collectAsStateWithLifecycle()
     val selected by vm.selectedActivity.collectAsStateWithLifecycle()
 
+    val context = androidx.compose.ui.platform.LocalContext.current
     LaunchedEffect(Unit) { vm.load() }
     val featured = homestays.take(3)
     val pagerState = rememberPagerState { featured.size.coerceAtLeast(1) }
@@ -73,7 +75,9 @@ fun HomeScreen(
         item {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text("🌿 Grama-Vasathi", style = MaterialTheme.typography.headlineMedium, color = EarthBrown, modifier = Modifier.clickable(enabled = BuildConfig.DEBUG) {
-                    vm.seed {}
+                    vm.seed { ok ->
+                        Toast.makeText(context, if (ok) "Seeded successfully" else "Seeding failed", Toast.LENGTH_SHORT).show()
+                    }
                 })
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Icon(Icons.Rounded.Search, null, modifier = Modifier.clickable { onExplore() })
