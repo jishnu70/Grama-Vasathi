@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Grama-Vasathi</string>
+    <string name="title_home">Home</string>
+    <string name="title_explore">Explore</string>
+    <string name="title_host">Host Training</string>
+    <string name="title_guide">Cultural Guide</string>
 </resources>
