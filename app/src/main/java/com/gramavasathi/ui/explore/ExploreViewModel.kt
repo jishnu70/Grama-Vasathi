@@ -75,6 +75,7 @@ class ExploreViewModel : ViewModel() {
             (it.name.contains(_query.value, true) || it.village.contains(_query.value, true) || it.district.contains(_query.value, true) || it.activities.any { a -> a.contains(_query.value, true) }) &&
                     it.price_per_night in _priceMin.value.toInt().._priceMax.value.toInt() &&
                     it.host_readiness_score >= _minScore.value.toInt() &&
+                    // Intentional ALL-match logic: homestay must contain every selected activity.
                     _selectedActivities.value.all { act -> it.activities.contains(act) }
         }
         out = when (_sort.value) {
