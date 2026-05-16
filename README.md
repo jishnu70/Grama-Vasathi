@@ -8,6 +8,16 @@ The application serves as a marketplace for rural homestays, highlighting local 
 
 GitHub Repository: [https://github.com/jishnu70/Grama-Vasathi](https://github.com/jishnu70/Grama-Vasathi)
 
+## Screenshots
+
+| Splash Screen | Home Screen | Explore Screen |
+| :---: | :---: | :---: |
+| ![Splash](screenshots/splash.png) | ![Home](screenshots/home.png) | ![Explore](screenshots/explore.png) |
+
+| Detail Screen | Booking Screen | Host Training |
+| :---: | :---: | :---: |
+| ![Detail](screenshots/detail.png) | ![Booking](screenshots/booking.png) | ![Host](screenshots/host.png) |
+
 ## Key Features
 
 - **Localized Experience**: Full support for Kannada language across the interface to resonate with local hosts and travelers.
